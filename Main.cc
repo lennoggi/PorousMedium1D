@@ -39,6 +39,12 @@ int main() {
         #else
         #error "Invalid initial data"
         #endif
+
+        if (u[i] < 0.0) {
+            cout << "ERROR: u = " << u[i] << " < 0 at x = " << x[i]
+                 << ". The porous medium equation only admits non-negative solutions; please provide non-negative initial data." << endl;
+            return 1;
+        }
     }
 
 
@@ -74,8 +80,8 @@ int main() {
     assert(H5Dclose(x_dset_id) >= 0);
 
 
-    // ***** Function *****
-    const auto u_group_id = H5Gcreate(file_id, "Function",
+    // ***** Solution *****
+    const auto u_group_id = H5Gcreate(file_id, "Solution",
                                       H5P_DEFAULT, H5P_DEFAULT, H5P_DEFAULT);
     assert(u_group_id >= 0); 
 
@@ -124,6 +130,16 @@ int main() {
                 const auto uim = (i > 0)   ? u[i-1] : U0;
                 const auto uip = (i < nxm) ? u[i+1] : UL;
 
+                if (ui < 0.0 or uim < 0.0 or uip < 0.0) {
+                    cout << "ERROR (time iteration " << n << ", time " << n*DT << ", Newton-Raphon iteration " << nrcount
+                         << "): u[i] = " << ui << ", u[i-1] = " << uim << ", u[i+1] = " << uip << " at x = " << x[i]
+                         << ". The porous medium equation only admits non-negative solutions."
+                         << " The solution might have gone negative after Newton-Raphson overshooting due to an overly large time step."
+                         << " Try reducing the time step parameter DT (currently DT = " << DT << ")."
+                         << endl;
+                    return 1;
+                }
+
                 const auto uig  = pow(ui,  GAMMA);
                 const auto uimg = pow(uim, GAMMA);
                 const auto uipg = pow(uip, GAMMA);
@@ -156,7 +172,7 @@ int main() {
             // Solve J*du = -res where J = dr^i/du^j (linearization of res = 0)
             Thomas_tridiagonal_solver(dri_duim, dri_dui, dri_duip, neg_res, du);
 
-            // Update the function
+            // Update the solution
             for (auto i = decltype(NX){0}; i < NX; ++i) {
                 u[i] += du[i];
             }
