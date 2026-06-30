@@ -7,7 +7,7 @@ The porous medium equation in one spatial dimension with Dirichlet boundary cond
 
 $$
 \begin{align*}
-    \frac{\partial u}{\partial t}\left(t, x\right) = \alpha\frac{\partial}{\partial x^2}\left(u^{\gamma + 1}\right)\left(t, x\right) \\
+    \frac{\partial u}{\partial t}\left(t, x\right) &= \alpha\frac{\partial}{\partial x^2}\left(u^{\gamma + 1}\right)\left(t, x\right) \\
     u\left(t, 0\right) &= u_0 \\
     u\left(t, L\right) &= u_L
 \end{align*}
