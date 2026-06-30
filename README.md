@@ -1,5 +1,5 @@
 # PorousMedium1D
-A code solving the 1D porous medium equation with Dirichlet boundary conditions on a uniform grid
+A code solving the 1D porous medium equation with Dirichlet boundary conditions on a uniform grid by implicit time integration (backward Euler)
 
 
 ## Description
